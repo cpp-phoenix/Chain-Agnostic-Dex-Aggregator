@@ -4,16 +4,15 @@ import { publicProvider } from 'wagmi/providers/public'
 import Navbar from './components/Navbar';
 import { chainListMainnet } from './constants/Constants';
 
-const { chains, provider } = configureChains(chainListMainnet, [
-  publicProvider()
-])
+const { chains, provider, webSocketProvider } = configureChains(
+  chainListMainnet,
+  [publicProvider()],
+)
 
 const client = createClient({
   autoConnect: true,
-  connectors: new MetaMaskConnector({
-    chains
-  }),
   provider,
+  webSocketProvider,
 })
 
 function App() {

@@ -32,12 +32,12 @@ function Navbar() {
     return (
         <div>
             <div className="flex py-3 mx-4">
-                <div className="text-[#6beaa5] py-2 mr-4 font-bold">
+                <div className="text-[#6beaa5] py-2 mr-4 font-bold text-lg">
                     Agnostic Swap
                 </div>
                 <div className="flex-1 flex justify-center text-white py-2 space-x-28">
-                    <button className="text-[#6beaa5] hover:text-[#29a15f] hover:font-semibold">Swap</button>
-                    <button className="text-[#6beaa5] hover:text-[#29a15f] hover:font-semibold">Charts</button>
+                    <button className="text-[#6beaa5] hover:text-[#29a15f] hover:font-semibold text-lg">Swap</button>
+                    <button className="text-[#6beaa5] hover:text-[#29a15f] hover:font-semibold text-lg">Charts</button>
                 </div>
                 <div className="flex flex-row w-4/12 justify-end">
                 {isConnected && connectMenu && 
