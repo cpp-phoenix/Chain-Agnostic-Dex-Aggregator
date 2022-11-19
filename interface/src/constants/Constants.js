@@ -68,6 +68,23 @@ export const chainListMainnet = [
         testnet: false,
     },
     {
+      id: 250,
+      name: 'Fantom',
+      network: 'FTM',
+      nativeCurrency: {
+        decimals: 18,
+        name: 'Ftm',
+        symbol: 'FTM',
+      },
+      rpcUrls: {
+        default: 'https://rpc.ftm.tools',
+      },
+      blockExplorers: {
+        default: { name: 'FtmScan', url: 'https://ftmscan.com' },
+      },
+      testnet: false,
+    },
+    {
         id: 10,
         name: 'Optimism',
         network: 'ETH',
@@ -81,23 +98,6 @@ export const chainListMainnet = [
         },
         blockExplorers: {
           default: { name: 'OptimisticScan', url: 'https://optimistic.etherscan.io' },
-        },
-        testnet: false,
-    },
-    {
-        id: 250,
-        name: 'Fantom',
-        network: 'FTM',
-        nativeCurrency: {
-          decimals: 18,
-          name: 'Ftm',
-          symbol: 'FTM',
-        },
-        rpcUrls: {
-          default: 'https://rpc.ftm.tools',
-        },
-        blockExplorers: {
-          default: { name: 'FtmScan', url: 'https://ftmscan.com' },
         },
         testnet: false,
     },
@@ -122,3 +122,76 @@ export const chainListMainnet = [
 
 export const chainListTestnet = [
 ]
+
+export const tokensList = {
+  "Avalance": [
+    {
+      token: "AVAX",
+      address: ""
+    },
+    {
+      token: "USDC",
+      address: "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e"
+    }
+  ],
+  "Binance": [
+    {
+      token: "BNB",
+      address: ""
+    },
+    {
+      token: "USDC",
+      address: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d"
+    }
+  ],
+  "Celo":[
+    {
+      token: "CELO",
+      address: ""
+    },
+    {
+      token: "cUSD",
+      address: "0x765DE816845861e75A25fCA122bb6898B8B1282a"
+    }
+  ],
+  "Ethereum":[
+    {
+      token: "ETH",
+      address: ""
+    },
+    {
+      token: "USDC",
+      address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+    }
+  ],
+  "Fantom":[
+    {
+      token: "FTM",
+      address: ""
+    },
+    {
+      token: "USDC",
+      address: "0x04068da6c83afcfa0e13ba15a6696662335d5b75"
+    }
+  ],
+  "Optimism":[
+    {
+      token: "ETH",
+      address: ""
+    },
+    {
+      token: "USDC",
+      address: "0x7f5c764cbc14f9669b88837ca1490cca17c31607"
+    }
+  ],
+  "Polygon":[
+    {
+      token: "MATIC",
+      address: ""
+    },
+    {
+      token: "USDC",
+      address: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174"
+    }
+  ]
+}

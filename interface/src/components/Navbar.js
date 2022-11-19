@@ -36,7 +36,7 @@ function Navbar() {
                 <div className="text-white py-2 mr-4 font-bold text-lg">
                     Agnostic Swap
                 </div>
-                <div className="flex-1 flex justify-end text-white py-2 space-x-40 pr-28">
+                <div className="flex-1 flex justify-end text-white py-2 space-x-28 pr-28">
                     <Link className="text-white hover:text-[#29a15f] hover:font-semibold text-lg" to='/'>Swap</Link>
                     <Link className="text-white hover:text-[#29a15f] hover:font-semibold text-lg" to='/stats'>Stats</Link>
                 </div>

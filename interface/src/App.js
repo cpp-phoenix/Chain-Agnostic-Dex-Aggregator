@@ -4,10 +4,10 @@ import { publicProvider } from 'wagmi/providers/public'
 import Navbar from './components/Navbar';
 import Swap from './pages/Swap';
 import Stats from './pages/Stats';
-import { chainListMainnet } from './constants/Constants';
+import { chainListMainnet as ChainList } from './constants/Constants';
 
 const { chains, provider, webSocketProvider } = configureChains(
-  chainListMainnet,
+  ChainList,
   [publicProvider()],
 )
 
