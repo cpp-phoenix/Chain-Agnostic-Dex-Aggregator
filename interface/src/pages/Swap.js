@@ -1,12 +1,15 @@
 import { chainListMainnet as ChainList } from "../constants/Constants";
 import { useAccount, useNetwork} from 'wagmi'
 import { useEffect, useState } from "react";
+import { useProvider } from 'wagmi'
 import { tokensList } from "../constants/Constants";
 
 function Swap() {
 
     const { chain } = useNetwork()
     const { address, isConnected, isDisconnected } = useAccount()
+    const { provider } = useProvider()
+
     const [chainTo, setChainTo] = useState("");
     const [chainSelect, setChainSelect] = useState(false);
     const [sendTokenBalance, setSendTokenBalance] = useState(0);
@@ -26,6 +29,11 @@ function Swap() {
         }
     },[isConnected])
 
+    useEffect(() => {
+        setSendToken({});
+        setSendTokenBalance(0);
+    }, [chain.name])
+
     const NetworkTab = () => {
         return (
             <div className="absolute mt-1 rounded-lg border bg-white">
@@ -44,56 +52,71 @@ function Swap() {
 
     const TokenSelect = ({chainName}) => {
         console.log("Send Token list: ",tokensList[chain.name]);
+        tokensList[chainName].map((token) => {
+            if(token.address === "") {
+                token.balance = async () => await provider.getBalance(address);
+            } else {
+                token.balance = "0";
+            }
+        });
         return (
-            <div className="rounded-lg border-rounded-lg border border-gray-200 absolute bg-white w-96 h-content">
-                <div className="flex items-center h-16 justify-center border-b border-gray-200 text-xl"> Tokens List </div>
-                <div className="p-2 px-6 flex flex-row justify-between text-sm text-gray-600">
-                    <div>Token name</div>
-                    <div>Balance</div>
+            <div className="absolute flex items-center justify-center">
+                <div className="border-2 flex items-center justify-center w-screen h-screen bg-gray-100 z-10 opacity-20">
                 </div>
-                <div className="h-96 pb-4 px-2 overflow-y-scroll">
+                <div className="absolute rounded-lg border-rounded-lg border border-gray-200 bg-white w-72 h-content z-20">
+                <div className="flex items-center h-16 justify-center border-b border-gray-200 text-lg"> Tokens List </div>
+                <div className="p-2 px-6 flex flex-row justify-center text-sm text-gray-600">
+                    <div>Token name</div>
+                    {/* <div>Balance</div> */}
+                </div>
+                <div className="h-44 pb-4 px-2 overflow-y-scroll">
                     {
                         tokensList[chainName].map((token) =>
-                        <div onClick={() => {setShowSendTokenList(false); setSendToken({name: token.token, address: token.address});}} key={token.address} className="rounded-lg cursor-pointer flex justify-between hover:bg-gray-100 px-6 py-4"> 
+                        <div onClick={() => {setShowSendTokenList(false); setSendToken({name: token.token, address: token.address});}} key={token.address} className="rounded-lg cursor-pointer flex justify-center hover:bg-gray-100 px-6 py-4 text-lg"> 
                             <div>
                                 {token.token}
                             </div>
-                            <div>
-                                0
-                            </div>
+                            {/* <div>
+                                {token.balance}
+                            </div> */}
                         </div>
                         )
                     }
                 </div>
-                <div onClick={() => setShowSendTokenList(false)} className="cursor-pointer flex items-center justify-center text-red-600 text-xl rounded-b-lg h-16 bg-gray-100 border-t border-gray-200"> close </div>
+                <div onClick={() => setShowSendTokenList(false)} className="cursor-pointer flex items-center justify-center text-red-600 text-lg rounded-b-lg h-16 bg-gray-100 border-t border-gray-200"> close </div>
             </div>
+        </div>
         )
     }
 
     const TokenSelectReceive = ({chainName}) => {
         console.log("Send Token list: ",tokensList[chain.name]);
         return (
-            <div className="absolute rounded-lg border-rounded-lg border border-gray-200 bg-white w-96 h-content">
-                <div className="flex items-center h-16 justify-center border-b border-gray-200 text-xl"> Tokens List </div>
-                <div className="p-2 px-6 flex flex-row justify-between text-sm text-gray-600">
-                    <div>Token name</div>
-                    <div>Balance</div>
+            <div className="absolute flex items-center justify-center">
+                <div className="border-2 flex items-center justify-center w-screen h-screen bg-gray-100 z-10 opacity-20">
                 </div>
-                <div className="h-96 pb-4 px-2 overflow-y-scroll">
-                    {
-                        tokensList[chainName].map((token) =>
-                        <div key={token.address} className="rounded-lg cursor-pointer flex justify-between hover:bg-gray-100 px-6 py-4"> 
-                            <div>
-                                {token.token}
+                <div className="absolute rounded-lg border-rounded-lg border border-gray-200 bg-white w-72 h-content z-20">
+                    <div className="flex items-center h-16 justify-center border-b border-gray-200 text-xl"> Tokens List </div>
+                    <div className="p-2 px-6 flex flex-row justify-center text-sm text-gray-600">
+                        <div>Token name</div>
+                        {/* <div>Balance</div> */}
+                    </div>
+                    <div className="h-44 pb-4 px-2 overflow-y-scroll">
+                        {
+                            tokensList[chainName].map((token) =>
+                            <div onClick={() => {setshowReceiveTokenList(false); setReceiveToken({name: token.token, address: token.address});}} key={token.address} className="rounded-lg cursor-pointer flex justify-center hover:bg-gray-100 px-6 py-4 text-lg"> 
+                                <div>
+                                    {token.token}
+                                </div>
+                                {/* <div>
+                                    0
+                                </div> */}
                             </div>
-                            <div>
-                                0
-                            </div>
-                        </div>
-                        )
-                    }
+                            )
+                        }
+                    </div>
+                    <div onClick={() => setshowReceiveTokenList(false)} className="cursor-pointer flex items-center justify-center text-red-600 text-xl rounded-b-lg h-16 bg-gray-100 border-t border-gray-200"> close </div>
                 </div>
-                <div onClick={() => setshowReceiveTokenList(false)} className="cursor-pointer flex items-center justify-center text-red-600 text-xl rounded-b-lg h-16 bg-gray-100 border-t border-gray-200"> close </div>
             </div>
         )
     }
@@ -114,7 +137,7 @@ function Swap() {
                         </div>
                         <div className="space-y-2">
                             <div className="font-semibold text-sm">Swap to</div>
-                            <div onClick={() => setChainSelect(!chainSelect)} className="cursor-pointer rounded-lg border-2 py-2 px-4 text-center w-36">{chainTo + (chainSelect ? " ^" : " v") || "-"}</div>
+                            <div onClick={() => {setChainSelect(!chainSelect); setReceiveToken({}); setReceiveTokenBalance(0);} } className="cursor-pointer rounded-lg border-2 py-2 px-4 text-center w-36">{chainTo + (chainSelect ? " ^" : " v") || "-"}</div>
                             { chainSelect && <NetworkTab/> }
                         </div>
                     </div>
@@ -124,7 +147,7 @@ function Swap() {
                                 <span className="text-sm font-semibold">You send</span>
                                 <span className="text-gray-400 text-xs">Balance: {sendTokenBalance}</span>
                             </div>
-                            <div className="flex rounded-lg border-2 h-10">
+                            <div className="flex rounded-lg border-2 h-12">
                                 <div className="flex items-center mx-2 w-60 border-r-2">{sendTokenInput}</div>
                                 <div onClick={() => setShowSendTokenList(true)} className="cursor-pointer flex flex-1 px-2 items-center">{sendToken.name ? sendToken.name : "Select"}</div>
                             </div>
@@ -134,9 +157,9 @@ function Swap() {
                                 <span className="text-sm font-semibold">You receive</span>
                                 <span className="text-gray-400 text-xs">Balance: {receiveTokenBalance}</span>
                             </div>
-                            <div className="flex rounded-lg border-2 h-10">
+                            <div className="flex rounded-lg border-2 h-12">
                                 <div className="flex items-center mx-2 w-60 border-r-2">{receiveTokenInput}</div>
-                                <div onClick={() => setshowReceiveTokenList(true)} className="cursor-pointer flex flex-1 px-2 items-center">{receiveToken ? "Select" : receiveToken.name}</div>
+                                <div onClick={() => setshowReceiveTokenList(true)} className="cursor-pointer flex flex-1 px-2 items-center">{receiveToken.name ? receiveToken.name : "Select"}</div>
                             </div>
                         </div>
                     </div>
@@ -154,7 +177,7 @@ function Swap() {
                             <div>dfdf</div>
                         </div>
                     </div>
-                    <div className="flex items-center justify-center w-full h-14 rounded-lg bg-[#d1b17c] mt-6">
+                    <div className="cursor-pointer flex items-center justify-center w-full h-14 rounded-lg bg-[#d1b17c] mt-6">
                         Not Enough Balance
                     </div>
                 </div>

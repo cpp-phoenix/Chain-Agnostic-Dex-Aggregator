@@ -4,7 +4,6 @@ import { chainListMainnet as ChainList } from "../constants/Constants";
 
 function WalletConnect() {
     const { chain } = useNetwork()
-    const { address, isConnected, isDisconnected } = useAccount()
     const { error, isLoading, pendingChainId, switchNetwork } = useSwitchNetwork()
     const [viewNetworkTab, setViewNetworkTab] = useState(false);
 
