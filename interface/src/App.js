@@ -1,7 +1,9 @@
 import { WagmiConfig, createClient, configureChains} from 'wagmi'
-import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { publicProvider } from 'wagmi/providers/public'
 import Navbar from './components/Navbar';
+import Swap from './pages/Swap';
+import Stats from './pages/Stats';
 import { chainListMainnet } from './constants/Constants';
 
 const { chains, provider, webSocketProvider } = configureChains(
@@ -19,7 +21,13 @@ function App() {
   return (
     <WagmiConfig client={client}>
       <div className="w-screen h-screen bg-[#121517]">
-        <Navbar/>
+        <Router>
+          <Navbar/>
+          <Routes>
+            <Route path='/' exact element={<Swap/>} />
+            <Route path='/stats' element={<Stats/>} />
+          </Routes>
+        </Router>
       </div>
     </WagmiConfig>
   );

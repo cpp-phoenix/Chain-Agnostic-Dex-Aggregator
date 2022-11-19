@@ -18,11 +18,11 @@ export const chainListMainnet = [
     },
     {
         id: 56,
-        name: 'Binance Chain',
+        name: 'Binance',
         network: 'bnb',
         nativeCurrency: {
           decimals: 18,
-          name: 'Binance Chain',
+          name: 'Binance',
           symbol: 'BNB',
         },
         rpcUrls: {
