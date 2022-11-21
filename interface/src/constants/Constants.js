@@ -17,6 +17,23 @@ export const chainListMainnet = [
         testnet: false,
     },
     {
+      id: 42_161,
+      name: 'Arbitrum',
+      network: 'arbitrum',
+      nativeCurrency: {
+        decimals: 18,
+        name: 'Arbitrum',
+        symbol: 'ETH',
+      },
+      rpcUrls: {
+        default: 'https://arbitrum-mainnet.infura.io',
+      },
+      blockExplorers: {
+        default: { name: 'ArbitrumScan', url: 'https://explorer.arbitrum.io' },
+      },
+      testnet: false,
+    },
+    {
         id: 56,
         name: 'Binance',
         network: 'bnb',
@@ -121,26 +138,9 @@ export const chainListMainnet = [
 ]
 
 export const chainListTestnet = [
-  // {
-  //   id: 97,
-  //   name: 'Binance',
-  //   network: 'bnb',
-  //   nativeCurrency: {
-  //     decimals: 18,
-  //     name: 'Binance',
-  //     symbol: 'BNB',
-  //   },
-  //   rpcUrls: {
-  //     default: 'https://data-seed-prebsc-1-s1.binance.org:8545',
-  //   },
-  //   blockExplorers: {
-  //     default: { name: 'BscScan', url: 'https://testnet.bscscan.com' },
-  //   },
-  //   testnet: true,
-  // },
   {
     id: 5,
-    name: 'Ethereum',
+    name: 'Goeri',
     network: 'ETH',
     nativeCurrency: {
       decimals: 18,
@@ -152,6 +152,23 @@ export const chainListTestnet = [
     },
     blockExplorers: {
       default: { name: 'EtherScan', url: 'https://goerli.etherscan.io' },
+    },
+    testnet: true,
+  },
+  {
+    id: 80_001,
+    name: 'Mumbai',
+    network: 'Matic',
+    nativeCurrency: {
+      decimals: 18,
+      name: 'Matic',
+      symbol: 'MATIC',
+    },
+    rpcUrls: {
+      default: 'https://matic-mumbai.chainstacklabs.com',
+    },
+    blockExplorers: {
+      default: { name: 'PolygonScan', url: 'https://mumbai.polygonscan.com' },
     },
     testnet: true,
   }
@@ -167,6 +184,18 @@ export const tokensList = {
     {
       token: "USDC",
       address: "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
+      decimals: 6
+    }
+  ],
+  "Arbitrum": [
+    {
+      token: "ETH",
+      address: "",
+      decimals: 18
+    },
+    {
+      token: "USDC",
+      address: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
       decimals: 6
     }
   ],
@@ -247,4 +276,20 @@ export const tokensList = {
       decimals: 6
     }
   ]
+}
+
+export const zeroXMainnet = {
+  "Avalance": "https://arbitrum.api.0x.org/",
+  "Arbitrum": "https://arbitrum.api.0x.org/",
+  "Binance": "https://bsc.api.0x.org/",
+  "Celo": "https://celo.api.0x.org/",
+  "Ethereum": "https://api.0x.org/",
+  "Fantom": "https://fantom.api.0x.org/",
+  "Optimism": "https://optimism.api.0x.org/",
+  "Polygon": "https://polygon.api.0x.org/"
+}
+
+export const zeroXTestnet = {
+  "Ethereum": "https://goerli.api.0x.org/",
+  "Polygon": "https://mumbai.api.0x.org/"
 }

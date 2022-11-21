@@ -37,8 +37,8 @@ function Navbar() {
                     Agnostic Swap
                 </div>
                 <div className="flex-1 flex justify-end text-white py-2 space-x-28 pr-28">
-                    <Link className="text-white hover:text-[#29a15f] hover:font-semibold text-lg" to='/'>Swap</Link>
-                    <Link className="text-white hover:text-[#29a15f] hover:font-semibold text-lg" to='/stats'>Stats</Link>
+                    <Link className="text-white hover:text-[#29a15f] text-lg" to='/'>Swap</Link>
+                    <Link className="text-white hover:text-[#29a15f] text-lg" to='/stats'>Stats</Link>
                 </div>
                 <div className="flex flex-row w-4/12 justify-end">
                 {isConnected && connectMenu && 
@@ -52,8 +52,8 @@ function Navbar() {
                 }
                 {isConnected && <WalletConnect />}
                 {isConnected ? 
-                    <button onClick={() => setConnectMenu(!connectMenu)} className="flex flex-row ml-4 px-3 py-2 bg-[#6beaa5] hover:bg-[#29a15f] text-[#07210f] font-semibold border-2 border-white"> {address.substring(0,6) + "...." + address.substring(address.length - 4,address.length)} &nbsp; {connectMenu ? <div className="text-white">^</div> : <div className="text-white">v</div> }</button> : 
-                    <button onClick={() => connectWallet()} className="ml-4 px-3 py-2 bg-[#6beaa5] hover:bg-[#29a15f] text-[#07210f] font-semibold border-2 border-white">Connect Wallet</button>
+                    <button onClick={() => setConnectMenu(!connectMenu)} className="flex flex-row items-center ml-4 px-3 py-2 bg-[#6beaa5] hover:bg-[#29a15f] text-[#07210f] font-semibold"> {address.substring(0,6) + "...." + address.substring(address.length - 4,address.length)} &nbsp; {connectMenu ? <div className="text-white">^</div> : <div className="text-white">v</div> }</button> : 
+                    <button onClick={() => connectWallet()} className="ml-4 px-3 py-2 bg-[#6beaa5] hover:bg-[#29a15f] text-[#07210f] font-semibold">Connect Wallet</button>
                 }
                 </div>
             </div>

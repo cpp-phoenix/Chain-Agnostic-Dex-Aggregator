@@ -6,6 +6,7 @@ import { erc20ABI } from "wagmi";
 import qs from 'qs';
 import { ethers, utils } from "ethers";
 import { tokensList } from "../constants/Constants";
+import { zeroXMainnet } from "../constants/Constants";
 
 function Swap() {
 
@@ -78,9 +79,10 @@ function Swap() {
             buyToken: receiveToken.address === "" ? receiveToken.name : receiveToken.address,
             sellAmount: amount,
         }
+        
         // Fetch the swap price.
         const response = await fetch(
-            `https://api.0x.org/swap/v1/price?${qs.stringify(params)}`
+            `${zeroXMainnet[chain.name]}swap/v1/price?${qs.stringify(params)}`
         );
 
         const swapPriceJSON = await response.json();
@@ -90,7 +92,9 @@ function Swap() {
         console.log("Final Price: ", receiveTokenInput);
 
         setProtocolFee(swapPriceJSON.protocolFee)
-        setGasFee(utils.formatUnits((swapPriceJSON.gas * swapPriceJSON.gasPrice), 18))
+        const gasCost = swapPriceJSON.gas * swapPriceJSON.gasPrice;
+        console.log("Gs Cost: ", gasCost);
+        setGasFee(utils.formatEther(gasCost.toString()))
         setPriceImpact(swapPriceJSON.estimatedPriceImpact)
         setGasLoading(false);
     }
@@ -220,15 +224,15 @@ function Swap() {
                         <div className="w-full h-content rounded-lg bg-gray-100 p-4 py-4 text-sm text-gray-600 space-y-2">
                             <div className="flex flex-row justify-between">
                                 <div>Protocol Fee</div>
-                                <div>{gasLoading ? <svg class="animate-pulse rounded-full bg-gray-300 h-5 w-12 ..." viewBox="0 0 24 24"/> : protocolFee}</div>
+                                <div>{gasLoading ? <svg className="animate-pulse rounded-full bg-gray-300 h-5 w-12 ..." viewBox="0 0 24 24"/> : protocolFee}</div>
                             </div>
                             <div className="flex flex-row justify-between">
                                 <div>Gas Fee</div>
-                                <div>{gasLoading ? <svg class="animate-pulse rounded-full bg-gray-300 h-5 w-12 ..." viewBox="0 0 24 24"/> : gasFee}</div>
+                                <div>{gasLoading ? <svg className="animate-pulse rounded-full bg-gray-300 h-5 w-12 ..." viewBox="0 0 24 24"/> : gasFee}</div>
                             </div>
                             <div className="flex flex-row justify-between">
                                 <div>Price Impact</div>
-                                <div>{gasLoading ? <svg class="animate-pulse rounded-full bg-gray-300 h-5 w-12 ..." viewBox="0 0 24 24"/> : priceImpact}</div>
+                                <div>{gasLoading ? <svg className="animate-pulse rounded-full bg-gray-300 h-5 w-12 ..." viewBox="0 0 24 24"/> : priceImpact}</div>
                             </div>
                         </div>
                     }
