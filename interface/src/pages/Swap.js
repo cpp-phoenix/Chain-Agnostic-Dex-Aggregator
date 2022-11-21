@@ -2,24 +2,33 @@ import { chainListMainnet as ChainList } from "../constants/Constants";
 import { useAccount, useNetwork} from 'wagmi'
 import { useEffect, useState } from "react";
 import { useProvider } from 'wagmi'
+import { erc20ABI } from "wagmi";
+import qs from 'qs';
+import { ethers, utils } from "ethers";
 import { tokensList } from "../constants/Constants";
 
 function Swap() {
 
     const { chain } = useNetwork()
     const { address, isConnected, isDisconnected } = useAccount()
-    const { provider } = useProvider()
+    const provider = useProvider()
 
     const [chainTo, setChainTo] = useState("");
     const [chainSelect, setChainSelect] = useState(false);
     const [sendTokenBalance, setSendTokenBalance] = useState(0);
-    const [receiveTokenBalance, setReceiveTokenBalance] = useState(0);
+    const [receiveTokenBalance, setReceiveTokenBalance] = useState("0");
     const [sendTokenInput, setSendTokenInput] = useState(0);
     const [sendToken, setSendToken] = useState({});
     const [receiveTokenInput, setReceiveTokenInput] = useState(0);
     const [receiveToken, setReceiveToken] = useState({});
     const [showSendTokenList, setShowSendTokenList] = useState(false);
     const [showReceiveTokenList, setshowReceiveTokenList] = useState(false);
+
+    const [getQuoteEnabled, setGetQuoteEnabled] = useState(false);
+
+    const [swapFee, setSwapFee] = useState(0);
+    const [gasFee, setGasFee] = useState(0);
+    const [slippage, setSlippage] = useState(0);
 
     useEffect(() => {
         if(isConnected) {
@@ -32,7 +41,52 @@ function Swap() {
     useEffect(() => {
         setSendToken({});
         setSendTokenBalance(0);
-    }, [chain.name])
+    }, [chain?.name])
+
+    useEffect(() => {
+        if(sendToken.address === "") {
+            provider.getBalance(address).then(data => {
+                setSendTokenBalance(utils.formatEther(data.sub(data.mod(1e14))));
+            });
+        } else if(sendToken.address) {
+            const contract = new ethers.Contract(sendToken.address, erc20ABI, provider);
+            const balance = contract.balanceOf(address).then(data => {
+                const formattedBalance = utils.formatUnits(data, sendToken.decimals);
+                setSendTokenBalance(formattedBalance);
+            })
+        }
+    }, [sendToken])
+
+    useEffect(() => {
+        if(sendToken.name && receiveToken.name && sendTokenInput > 0 && sendTokenInput <= sendTokenBalance) {
+            setGetQuoteEnabled(true);
+        } else {
+            setGetQuoteEnabled(false);
+        }
+    }, [receiveToken, sendToken,sendTokenInput,receiveTokenInput])
+
+    async  function  getPrice(){
+        let  amount = Number(sendTokenInput * 10 ** sendToken.decimals);
+        console.log(amount);
+
+        const params = {
+            sellToken: sendToken.address === "" ? sendToken.name : sendToken.address,
+            buyToken: receiveToken.address,
+            sellAmount: amount,
+        }
+        // Fetch the swap price.
+        const response = await fetch(
+            `https://api.0x.org/swap/v1/price?${qs.stringify(params)}`
+        );
+
+        const swapPriceJSON = await response.json();
+        console.log("Price: ", swapPriceJSON);
+        const outputBalance = utils.formatUnits(swapPriceJSON.value, receiveToken.decimals);
+        setReceiveTokenInput(outputBalance);
+        // Use the returned values to populate the buy Amount and the estimated gas in the UI
+        // document.getElementById("to_amount").value = swapPriceJSON.buyAmount / (10 ** currentTrade.to.decimals);
+        // document.getElementById("gas_estimate").innerHTML = swapPriceJSON.estimatedGas;
+    }
 
     const NetworkTab = () => {
         return (
@@ -51,7 +105,6 @@ function Swap() {
     }
 
     const TokenSelect = ({chainName}) => {
-        console.log("Send Token list: ",tokensList[chain.name]);
         tokensList[chainName].map((token) => {
             if(token.address === "") {
                 token.balance = async () => await provider.getBalance(address);
@@ -72,7 +125,7 @@ function Swap() {
                 <div className="h-44 pb-4 px-2 overflow-y-scroll">
                     {
                         tokensList[chainName].map((token) =>
-                        <div onClick={() => {setShowSendTokenList(false); setSendToken({name: token.token, address: token.address});}} key={token.address} className="rounded-lg cursor-pointer flex justify-center hover:bg-gray-100 px-6 py-4 text-lg"> 
+                        <div onClick={() => {setShowSendTokenList(false); setSendToken({name: token.token, address: token.address, decimals: token.decimals});}} key={token.address} className="rounded-lg cursor-pointer flex justify-center hover:bg-gray-100 px-6 py-4 text-lg"> 
                             <div>
                                 {token.token}
                             </div>
@@ -104,7 +157,7 @@ function Swap() {
                     <div className="h-44 pb-4 px-2 overflow-y-scroll">
                         {
                             tokensList[chainName].map((token) =>
-                            <div onClick={() => {setshowReceiveTokenList(false); setReceiveToken({name: token.token, address: token.address});}} key={token.address} className="rounded-lg cursor-pointer flex justify-center hover:bg-gray-100 px-6 py-4 text-lg"> 
+                            <div onClick={() => {setshowReceiveTokenList(false); setReceiveToken({name: token.token, address: token.address, decimals: token.decimals});}} key={token.address} className="rounded-lg cursor-pointer flex justify-center hover:bg-gray-100 px-6 py-4 text-lg"> 
                                 <div>
                                     {token.token}
                                 </div>
@@ -148,17 +201,17 @@ function Swap() {
                                 <span className="text-gray-400 text-xs">Balance: {sendTokenBalance}</span>
                             </div>
                             <div className="flex rounded-lg border-2 h-12">
-                                <div className="flex items-center mx-2 w-60 border-r-2">{sendTokenInput}</div>
+                            <input onChange={(e) => {setSendTokenInput(e.target.value)}} className="placeholder:text-slate-400 block bg-white w-60 border-r-2 rounded-l-md py-2 px-2 mx-2 focus:outline-none focus:none focus:none sm:text-sm" placeholder="0" type="number" name="search"/>
                                 <div onClick={() => setShowSendTokenList(true)} className="cursor-pointer flex flex-1 px-2 items-center">{sendToken.name ? sendToken.name : "Select"}</div>
                             </div>
                         </div>
                         <div className="space-y-2">
                             <div className="flex justify-between items-end">
                                 <span className="text-sm font-semibold">You receive</span>
-                                <span className="text-gray-400 text-xs">Balance: {receiveTokenBalance}</span>
+                                {/* <span className="text-gray-400 text-xs">Balance: {receiveTokenBalance}</span> */}
                             </div>
                             <div className="flex rounded-lg border-2 h-12">
-                                <div className="flex items-center mx-2 w-60 border-r-2">{receiveTokenInput}</div>
+                                <input disabled onChange={(e) => {setReceiveTokenInput(e.target.value)}} className="placeholder:text-slate-400 block bg-white w-60 border-r-2 rounded-l-md py-2 px-2 mx-2 focus:outline-none focus:none focus:none sm:text-sm" placeholder="0" type="number" name="search"/>
                                 <div onClick={() => setshowReceiveTokenList(true)} className="cursor-pointer flex flex-1 px-2 items-center">{receiveToken.name ? receiveToken.name : "Select"}</div>
                             </div>
                         </div>
@@ -166,19 +219,21 @@ function Swap() {
                     <div className="w-full h-content rounded-lg bg-gray-100 p-4 py-4 text-sm text-gray-600 space-y-2">
                         <div className="flex flex-row justify-between">
                             <div>Swap Fee</div>
-                            <div>dfdf</div>
+                            <div>{swapFee}</div>
                         </div>
                         <div className="flex flex-row justify-between">
                             <div>Gas Fee</div>
-                            <div>dfdf</div>
+                            <div>{gasFee}</div>
                         </div>
                         <div className="flex flex-row justify-between">
                             <div>Slippage</div>
-                            <div>dfdf</div>
+                            <div>{slippage}</div>
                         </div>
                     </div>
-                    <div className="cursor-pointer flex items-center justify-center w-full h-14 rounded-lg bg-[#d1b17c] mt-6">
-                        Not Enough Balance
+                    <div className='cursor-not-allowed'>
+                        <div className="flex items-center justify-center w-full h-14 rounded-lg bg-[#d1b17c] mt-6">
+                            Get Quote
+                        </div>
                     </div>
                 </div>
                 <div className="w-[550px] h-4/6 rounded-lg space-y-8">
