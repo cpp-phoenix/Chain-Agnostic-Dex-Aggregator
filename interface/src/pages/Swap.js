@@ -26,9 +26,11 @@ function Swap() {
 
     const [getQuoteEnabled, setGetQuoteEnabled] = useState(false);
 
-    const [swapFee, setSwapFee] = useState(0);
+    const [gasLoading, setGasLoading] = useState(false);
+
+    const [protocolFee, setProtocolFee] = useState(0);
     const [gasFee, setGasFee] = useState(0);
-    const [slippage, setSlippage] = useState(0);
+    const [priceImpact, setPriceImpact] = useState(0);
 
     useEffect(() => {
         if(isConnected) {
@@ -58,20 +60,22 @@ function Swap() {
     }, [sendToken])
 
     useEffect(() => {
-        if(sendToken.name && receiveToken.name && sendTokenInput > 0 && sendTokenInput <= sendTokenBalance) {
+        if(sendToken.name && receiveToken.name && sendToken.name !== receiveToken.name && sendTokenInput > 0 && sendTokenInput <= sendTokenBalance) {
             setGetQuoteEnabled(true);
+            getPrice();
         } else {
             setGetQuoteEnabled(false);
         }
     }, [receiveToken, sendToken,sendTokenInput,receiveTokenInput])
 
     async  function  getPrice(){
+        setGasLoading(true);
         let  amount = Number(sendTokenInput * 10 ** sendToken.decimals);
         console.log(amount);
 
         const params = {
             sellToken: sendToken.address === "" ? sendToken.name : sendToken.address,
-            buyToken: receiveToken.address,
+            buyToken: receiveToken.address === "" ? receiveToken.name : receiveToken.address,
             sellAmount: amount,
         }
         // Fetch the swap price.
@@ -80,12 +84,15 @@ function Swap() {
         );
 
         const swapPriceJSON = await response.json();
-        console.log("Price: ", swapPriceJSON);
-        const outputBalance = utils.formatUnits(swapPriceJSON.value, receiveToken.decimals);
+        const outputBalance = utils.formatUnits(swapPriceJSON.buyAmount, receiveToken.decimals);
         setReceiveTokenInput(outputBalance);
-        // Use the returned values to populate the buy Amount and the estimated gas in the UI
-        // document.getElementById("to_amount").value = swapPriceJSON.buyAmount / (10 ** currentTrade.to.decimals);
-        // document.getElementById("gas_estimate").innerHTML = swapPriceJSON.estimatedGas;
+        console.log("Price: ", swapPriceJSON);
+        console.log("Final Price: ", receiveTokenInput);
+
+        setProtocolFee(swapPriceJSON.protocolFee)
+        setGasFee(utils.formatUnits((swapPriceJSON.gas * swapPriceJSON.gasPrice), 18))
+        setPriceImpact(swapPriceJSON.estimatedPriceImpact)
+        setGasLoading(false);
     }
 
     const NetworkTab = () => {
@@ -120,7 +127,6 @@ function Swap() {
                 <div className="flex items-center h-16 justify-center border-b border-gray-200 text-lg"> Tokens List </div>
                 <div className="p-2 px-6 flex flex-row justify-center text-sm text-gray-600">
                     <div>Token name</div>
-                    {/* <div>Balance</div> */}
                 </div>
                 <div className="h-44 pb-4 px-2 overflow-y-scroll">
                     {
@@ -129,9 +135,6 @@ function Swap() {
                             <div>
                                 {token.token}
                             </div>
-                            {/* <div>
-                                {token.balance}
-                            </div> */}
                         </div>
                         )
                     }
@@ -161,9 +164,6 @@ function Swap() {
                                 <div>
                                     {token.token}
                                 </div>
-                                {/* <div>
-                                    0
-                                </div> */}
                             </div>
                             )
                         }
@@ -211,27 +211,29 @@ function Swap() {
                                 {/* <span className="text-gray-400 text-xs">Balance: {receiveTokenBalance}</span> */}
                             </div>
                             <div className="flex rounded-lg border-2 h-12">
-                                <input disabled onChange={(e) => {setReceiveTokenInput(e.target.value)}} className="placeholder:text-slate-400 block bg-white w-60 border-r-2 rounded-l-md py-2 px-2 mx-2 focus:outline-none focus:none focus:none sm:text-sm" placeholder="0" type="number" name="search"/>
+                                <div className="flex items-center w-60 border-r-2 mx-2 px-2 text-sm" >{receiveTokenInput}</div>
                                 <div onClick={() => setshowReceiveTokenList(true)} className="cursor-pointer flex flex-1 px-2 items-center">{receiveToken.name ? receiveToken.name : "Select"}</div>
                             </div>
                         </div>
                     </div>
-                    <div className="w-full h-content rounded-lg bg-gray-100 p-4 py-4 text-sm text-gray-600 space-y-2">
-                        <div className="flex flex-row justify-between">
-                            <div>Swap Fee</div>
-                            <div>{swapFee}</div>
+                    {gasFee > 0 && 
+                        <div className="w-full h-content rounded-lg bg-gray-100 p-4 py-4 text-sm text-gray-600 space-y-2">
+                            <div className="flex flex-row justify-between">
+                                <div>Protocol Fee</div>
+                                <div>{gasLoading ? <svg class="animate-pulse rounded-full bg-gray-300 h-5 w-12 ..." viewBox="0 0 24 24"/> : protocolFee}</div>
+                            </div>
+                            <div className="flex flex-row justify-between">
+                                <div>Gas Fee</div>
+                                <div>{gasLoading ? <svg class="animate-pulse rounded-full bg-gray-300 h-5 w-12 ..." viewBox="0 0 24 24"/> : gasFee}</div>
+                            </div>
+                            <div className="flex flex-row justify-between">
+                                <div>Price Impact</div>
+                                <div>{gasLoading ? <svg class="animate-pulse rounded-full bg-gray-300 h-5 w-12 ..." viewBox="0 0 24 24"/> : priceImpact}</div>
+                            </div>
                         </div>
-                        <div className="flex flex-row justify-between">
-                            <div>Gas Fee</div>
-                            <div>{gasFee}</div>
-                        </div>
-                        <div className="flex flex-row justify-between">
-                            <div>Slippage</div>
-                            <div>{slippage}</div>
-                        </div>
-                    </div>
-                    <div className='cursor-not-allowed'>
-                        <div className="flex items-center justify-center w-full h-14 rounded-lg bg-[#d1b17c] mt-6">
+                    }
+                    <div className={getQuoteEnabled ? "rounded-lg cursor-pointer bg-[#d1b17c] text-black" : "rounded-lg cursor-not-allowed bg-gray-400 text-white"}>
+                        <div className="flex items-center justify-center w-full h-14 rounded-lg mt-6">
                             Get Quote
                         </div>
                     </div>
@@ -241,9 +243,9 @@ function Swap() {
                         Refreshing routes in ~ <span className="text-[#29a15f]">17s</span>
                     </div>
                     <div className="w-full bg-white h-60 rounded-lg border-2 border-[#29a15f]">
-                        <div className="flex flex-row w-52 bg-gray-100 border-b border-r rounded-br-lg rounded-tl-lg p-2">
-                            <div className="text-xs text-gray-700 border-r border-gray-400 w-content px-2">Gas Fee: 123</div>
-                            <div className="text-xs text-gray-700 w-content px-2">Swap Fee: 123</div>
+                        <div className="flex flex-row w-72 bg-gray-100 border-b border-r rounded-br-lg rounded-tl-lg p-2">
+                            <div className="text-xs text-gray-700 border-r border-gray-400 w-content px-2">Gas Fee: {gasFee} </div>
+                            <div className="text-xs text-gray-700 w-content px-2">Protocol Fee: {protocolFee}</div>
                         </div>
                     </div>
                 </div>
