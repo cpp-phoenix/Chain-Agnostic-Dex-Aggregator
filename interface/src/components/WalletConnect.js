@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi'
-import { chainListMainnet as ChainList } from "../constants/Constants";
+import { chainListTestnet as ChainList } from "../constants/Constants";
 
 function WalletConnect() {
     const { chain } = useNetwork()

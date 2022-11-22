@@ -38,6 +38,7 @@ function Navbar() {
                 </div>
                 <div className="flex-1 flex justify-end text-white py-2 space-x-28 pr-28">
                     <Link className="text-white hover:text-[#29a15f] text-lg" to='/'>Swap</Link>
+                    <Link className="text-white hover:text-[#29a15f] text-lg" to='/pools'>Pools</Link>
                     <Link className="text-white hover:text-[#29a15f] text-lg" to='/stats'>Stats</Link>
                 </div>
                 <div className="flex flex-row w-4/12 justify-end">

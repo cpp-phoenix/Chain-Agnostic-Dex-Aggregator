@@ -1,11 +1,11 @@
-import { chainListMainnet as ChainList } from "../constants/Constants";
+import { chainListTestnet as ChainList } from "../constants/Constants";
 import { useAccount, useNetwork} from 'wagmi'
 import { useEffect, useState } from "react";
 import { useProvider } from 'wagmi'
 import { erc20ABI } from "wagmi";
 import qs from 'qs';
 import { ethers, utils } from "ethers";
-import { tokensList } from "../constants/Constants";
+import { tokensListTestnet as tokensList } from "../constants/Constants";
 import { zeroXMainnet } from "../constants/Constants";
 
 function Swap() {
@@ -62,8 +62,12 @@ function Swap() {
 
     useEffect(() => {
         if(sendToken.name && receiveToken.name && sendToken.name !== receiveToken.name && sendTokenInput > 0 && sendTokenInput <= sendTokenBalance) {
-            setGetQuoteEnabled(true);
-            getPrice();
+            if(chain.name === chainTo) {
+                setGetQuoteEnabled(true);
+                getPrice();
+            } else {
+                
+            }
         } else {
             setGetQuoteEnabled(false);
         }
@@ -247,10 +251,12 @@ function Swap() {
                         Refreshing routes in ~ <span className="text-[#29a15f]">17s</span>
                     </div>
                     <div className="w-full bg-white h-60 rounded-lg border-2 border-[#29a15f]">
-                        <div className="flex flex-row w-72 bg-gray-100 border-b border-r rounded-br-lg rounded-tl-lg p-2">
-                            <div className="text-xs text-gray-700 border-r border-gray-400 w-content px-2">Gas Fee: {gasFee} </div>
-                            <div className="text-xs text-gray-700 w-content px-2">Protocol Fee: {protocolFee}</div>
-                        </div>
+                        {gasFee > 0 && 
+                            <div className="flex flex-row w-72 bg-gray-100 border-b border-r rounded-br-lg rounded-tl-lg p-2">
+                                <div className="text-xs text-gray-700 border-r border-gray-400 w-content px-2">Gas Fee: {gasFee} </div>
+                                <div className="text-xs text-gray-700 w-content px-2">Protocol Fee: {protocolFee}</div>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>

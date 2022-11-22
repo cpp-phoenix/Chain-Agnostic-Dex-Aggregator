@@ -4,7 +4,8 @@ import { publicProvider } from 'wagmi/providers/public'
 import Navbar from './components/Navbar';
 import Swap from './pages/Swap';
 import Stats from './pages/Stats';
-import { chainListMainnet as ChainList } from './constants/Constants';
+import { chainListTestnet as ChainList } from './constants/Constants';
+import Pools from './pages/Pools';
 
 const { chains, provider, webSocketProvider } = configureChains(
   ChainList,
@@ -26,6 +27,7 @@ function App() {
           <Routes>
             <Route path='/' exact element={<Swap/>} />
             <Route path='/stats' element={<Stats/>} />
+            <Route path='/pools' element={<Pools/>} />
           </Routes>
         </Router>
       </div>
